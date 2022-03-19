@@ -21,12 +21,7 @@ import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from google.colab import drive
-drive.mount('/content/drive')
-
-cd /content/drive/My Drive
-
-df= pd.read_csv('/content/drive/MyDrive/newdata/credit.csv')
+df= pd.read_csv('./credit.csv')
 
 df.head()
 
