@@ -238,5 +238,5 @@ def display(st,result):
 def main():
   result = result(weighted_scoring(preprocess(df)), preprocess(df))
   display(st, result.plt)
-  if __name__ == "__main__":
+if __name__ == "__main__":
     main()
