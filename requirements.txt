@@ -8,4 +8,4 @@ statsmodels==0.13.2
 matplotlib
 json5==0.9.5
 python-graphql-client==0.4.2
-upgrade pip
+pip==22.0.4
