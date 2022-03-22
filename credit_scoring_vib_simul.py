@@ -236,7 +236,9 @@ def display(st,result):
         st.table(exportList2.assign(hack='').set_index('hack'))
 
 def main():
-  result = result(weighted_scoring(preprocess(df)), preprocess(df))
+  preprocess = preprocess(df)
+  weighted_df = weighted_scoring(preprocess)
+  result = result(weighted_df, preprocess)
   display(st, result)
 if __name__ == "__main__":
     main()
