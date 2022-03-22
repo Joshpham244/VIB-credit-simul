@@ -23,7 +23,6 @@ import streamlit as st
 import plotly.tools as tls
 
 
-
 def housing_time(df):
   condition = [
              (df['age']<20),#Less than 1 year
