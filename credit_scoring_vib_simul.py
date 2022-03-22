@@ -222,9 +222,9 @@ def result(Scoring_board, df) :
   plt.ylim([0, 1])
   plt.ylabel('True Positive Rate')
   plt.xlabel('False Positive Rate')
-  plotly_fig = tls.mpl_to_plotly(fig)
+  plotly_fig = tls.mpl_to_plotly(a)
 
-  return plotly_fig  # print(classification_report(df.TARGET, df.ESTIM_TARGET)),
+  return plotly_fig  
 
 def display(st,result):
     st.plotly_chart(result)
