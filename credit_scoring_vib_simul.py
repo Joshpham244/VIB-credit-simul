@@ -23,7 +23,7 @@ import streamlit as st
 
 df= pd.read_csv('./credit.csv')
 
-df.head()
+
 
 def housing_time(df):
   condition = [
