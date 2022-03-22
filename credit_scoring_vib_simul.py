@@ -235,10 +235,9 @@ def display(st,result):
         st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
         st.table(exportList2.assign(hack='').set_index('hack'))
 
-def main():
+
+if __name__ == "__main__":
   preprocess = preprocess(df=df)
   weighted_df = weighted_scoring(preprocess=preprocess)
   result = result(Scoring_board=weighted_df, df=preprocess)
   display(st, result=result)
-if __name__ == "__main__":
-    main()
