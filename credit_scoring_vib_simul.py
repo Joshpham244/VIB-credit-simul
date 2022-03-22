@@ -21,7 +21,6 @@ import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import streamlit as st
 
-df= pd.read_csv('./credit.csv')
 
 
 
@@ -237,7 +236,8 @@ def display(st,result):
 
 
 if __name__ == "__main__":
-  preprocess = preprocess(df=df)
-  weighted_df = weighted_scoring(preprocess=preprocess)
-  result = result(Scoring_board=weighted_df, df=preprocess)
-  display(st, result=result)
+    df= pd.read_csv('./credit.csv')
+    preprocess = preprocess(df=df)
+    weighted_df = weighted_scoring(preprocess=preprocess)
+    result = result(Scoring_board=weighted_df, df=preprocess)
+    display(st, result=result)
