@@ -9,3 +9,4 @@ matplotlib
 json5==0.9.5
 python-graphql-client==0.4.2
 pip==22.0.4
+plotly
