@@ -214,7 +214,7 @@ def result(Scoring_board, df) :
   #plot
   domain_fpr, domain_tpr, domain_threshold = metrics.roc_curve(df.TARGET, df.ESTIM_TARGET)
   domain_roc_auc = metrics.auc(domain_fpr, domain_tpr)
-  fig,ax = plt.subplot(1,1) 
+  fig,ax = plt.subplots() 
   ax.title = plt.title('Receiver Operating Characteristic')
   ax.plot(domain_fpr, domain_tpr, '^', label='domain (AUC = %0.2F)' % domain_roc_auc)
   ax.legend(loc = 'lower right')
