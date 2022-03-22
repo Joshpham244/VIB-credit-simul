@@ -20,7 +20,7 @@ from sklearn.metrics import classification_report
 import sklearn.metrics as metrics
 import matplotlib.pyplot as plt
 import streamlit as st
-
+import plotly.tools as tls
 
 
 
@@ -223,8 +223,9 @@ def result(Scoring_board, df) :
   plt.ylim([0, 1])
   plt.ylabel('True Positive Rate')
   plt.xlabel('False Positive Rate')
-  plt.show()
-  return plt # print(classification_report(df.TARGET, df.ESTIM_TARGET)),
+  plotly_fig = tls.mpl_to_plotly(fig)
+
+  return plotly_fig  # print(classification_report(df.TARGET, df.ESTIM_TARGET)),
 
 def display(st,result):
     st.plotly_chart(result)
