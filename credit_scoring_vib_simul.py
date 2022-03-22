@@ -238,6 +238,6 @@ def display(st,result):
 if __name__ == "__main__":
     df= pd.read_csv('./credit.csv')
     preprocess = preprocess(df=df)
-    weighted_df = weighted_scoring(preprocess=preprocess)
+    weighted_df = weighted_scoring(df=preprocess)
     result = result(Scoring_board=weighted_df, df=preprocess)
     display(st, result=result)
