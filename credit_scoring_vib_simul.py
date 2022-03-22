@@ -214,15 +214,16 @@ def result(Scoring_board, df) :
   #plot
   domain_fpr, domain_tpr, domain_threshold = metrics.roc_curve(df.TARGET, df.ESTIM_TARGET)
   domain_roc_auc = metrics.auc(domain_fpr, domain_tpr)
-  a = plt.title('Receiver Operating Characteristic')
-  plt.plot(domain_fpr, domain_tpr, '^', label='domain (AUC = %0.2F)' % domain_roc_auc)
-  plt.legend(loc = 'lower right')
-  plt.plot([0, 1], [0, 1],'r--')
-  plt.xlim([0, 1])
-  plt.ylim([0, 1])
-  plt.ylabel('True Positive Rate')
-  plt.xlabel('False Positive Rate')
-  plotly_fig = tls.mpl_to_plotly(a)
+  fig,ax = plt.subplot(1,1) 
+  ax.title = plt.title('Receiver Operating Characteristic')
+  ax.plot(domain_fpr, domain_tpr, '^', label='domain (AUC = %0.2F)' % domain_roc_auc)
+  ax.legend(loc = 'lower right')
+  ax.plot([0, 1], [0, 1],'r--')
+  ax.xlim([0, 1])
+  ax.ylim([0, 1])
+  ax.ylabel('True Positive Rate')
+  ax.xlabel('False Positive Rate')
+  plotly_fig = tls.mpl_to_plotly(fig)
 
   return plotly_fig  
 
