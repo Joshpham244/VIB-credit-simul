@@ -225,7 +225,7 @@ def result(Scoring_board, df) :
   plt.ylabel('True Positive Rate')
   plt.xlabel('False Positive Rate')
   plt.show()
-  return print(classification_report(df.TARGET, df.ESTIM_TARGET)), plt
+  return plt # print(classification_report(df.TARGET, df.ESTIM_TARGET)),
 
 def display(st,result):
     # st.set_page_config(page_title='Khuyến nghị giao dịch cổ phiếu', page_icon=None,layout="wide",initial_sidebar_state='auto')
@@ -237,6 +237,6 @@ def display(st,result):
 
 def main():
   result = result(weighted_scoring(preprocess(df)), preprocess(df))
-  display(st, result.plt)
+  display(st, result)
 if __name__ == "__main__":
     main()
