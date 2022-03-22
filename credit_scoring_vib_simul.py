@@ -230,7 +230,7 @@ def result(Scoring_board, df) :
 def display(st,result):
     st.plotly_chart(result)
     st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
-    st.table(exportList2.assign(hack='').set_index('hack'))
+    
 
 
 if __name__ == "__main__":
