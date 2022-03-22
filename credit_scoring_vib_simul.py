@@ -227,12 +227,9 @@ def result(Scoring_board, df) :
   return plt # print(classification_report(df.TARGET, df.ESTIM_TARGET)),
 
 def display(st,result):
-    # st.set_page_config(page_title='Khuyến nghị giao dịch cổ phiếu', page_icon=None,layout="wide",initial_sidebar_state='auto')
-    col1 = st.beta_columns(1)
-    with col1:
-        st.plotly_chart(result)
-        st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
-        st.table(exportList2.assign(hack='').set_index('hack'))
+    st.plotly_chart(result)
+    st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
+    st.table(exportList2.assign(hack='').set_index('hack'))
 
 
 if __name__ == "__main__":
