@@ -221,8 +221,8 @@ def result(Scoring_board, df) :
   ax.legend(loc = 'lower right')
   ax.plot([0, 1], [0, 1],'r--')
   ax.set(xlim=(0,1),ylim=(0, 1))
-  ax.ylabel('True Positive Rate')
-  ax.xlabel('False Positive Rate')
+  ax.set_ylabel('True Positive Rate')
+  ax.set_xlabel('False Positive Rate')
   plotly_fig = tls.mpl_to_plotly(fig)
 
   return plotly_fig  
