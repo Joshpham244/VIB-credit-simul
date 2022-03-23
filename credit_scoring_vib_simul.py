@@ -22,6 +22,15 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import plotly.tools as tls
 
+#machine learning
+import lightgbm as lgb
+from sklearn.model_selection import train_test_split
+#run ml librabries
+from sklearn.preprocessing import MinMaxScaler
+
+from xgboost import XGBClassifier
+import xgboost as xgb
+from sklearn.metrics import plot_roc_curve
 
 def housing_time(df):
   condition = [
@@ -225,7 +234,221 @@ def result(Scoring_board, df) :
   ax.set_xlabel('False Positive Rate')
   plotly_fig = tls.mpl_to_plotly(fig)
 
-  return plotly_fig  
+  return plotly_fig  def plot_feature_importances(df, threshold = 0.9):
+    """
+    Plots 15 most important features and the cumulative importance of features.
+    Prints the number of features needed to reach threshold cumulative importance.
+    
+    Parameters
+    --------
+    df : dataframe
+        Dataframe of feature importances. Columns must be feature and importance
+    threshold : float, default = 0.9
+        Threshold for prining information about cumulative importances
+        
+    Return
+    --------
+    df : dataframe
+        Dataframe ordered by feature importances with a normalized column (sums to 1)
+        and a cumulative importance column
+    
+    """
+    
+    plt.rcParams['font.size'] = 18
+    
+    # Sort features according to importance
+    df = df.sort_values('importance', ascending = False).reset_index()
+    
+    # Normalize the feature importances to add up to one
+    df['importance_normalized'] = df['importance'] / df['importance'].sum()
+    df['cumulative_importance'] = np.cumsum(df['importance_normalized'])
+
+    # Make a horizontal bar chart of feature importances
+    plt.figure(figsize = (10, 6))
+    ax = plt.subplot()
+    
+    # Need to reverse the index to plot most important on top
+    ax.barh(list(reversed(list(df.index[:15]))), 
+            df['importance_normalized'].head(15), 
+            align = 'center', edgecolor = 'k')
+    
+    # Set the yticks and labels
+    ax.set_yticks(list(reversed(list(df.index[:15]))))
+    ax.set_yticklabels(df['feature'].head(15))
+    
+    # Plot labeling
+    plt.xlabel('Normalized Importance'); plt.title('Feature Importances')
+    plt.show()
+    
+    # Cumulative importance plot
+    plt.figure(figsize = (8, 6))
+    plt.plot(list(range(len(df))), df['cumulative_importance'], 'r-')
+    plt.xlabel('Number of Features'); plt.ylabel('Cumulative Importance'); 
+    plt.title('Cumulative Feature Importance');
+    plt.show();
+    
+    importance_index = np.min(np.where(df['cumulative_importance'] > threshold))
+    print('%d features required for %0.2f of cumulative importance' % (importance_index + 1, threshold))
+    
+    return df
+def preprocess_ml(credit_vib):
+  credit_vib.drop(columns=['job','personal_status'], inplace = True)
+  credit_vib = pd.get_dummies(credit_vib, drop_first= False)
+
+  label = credit_vib['TARGET']
+  df_train = credit_vib.copy()
+  df_train = df_train.drop(columns=['TARGET'])
+
+  Y = label.copy()
+  X = df_train.copy()
+  feat_names = list(X.columns)
+
+  X_ids = X.index.values
+  Y_ids = Y.index.values
+
+  feature_importances = np.zeros(X.shape[1])
+  model = lgb.LGBMClassifier(objective='binary', boosting_type = 'goss', n_estimators = 1000, class_weight = 'balanced')
+
+  for i in range(2):
+    train_features, valid_features, train_y, valid_y = train_test_split(X, Y, test_size = 0.25, random_state = i)
+    model.fit(train_features, train_y, early_stopping_rounds=100, eval_set = [(valid_features, valid_y)], 
+              eval_metric = 'auc', verbose = 200)
+    feature_importances += model.feature_importances_
+  feature_importances = feature_importances / 2
+
+  feature_importances = pd.DataFrame({'feature': feat_names, 'importance': feature_importances}).sort_values('importance', ascending = False)
+  zero_features = list(feature_importances[feature_importances['importance'] == 0.0]['feature'])
+  norm_feature_importances = plot_feature_importances(feature_importances)
+  df_train = df_train.drop(columns= zero_features)
+  threshold = 0.95
+
+  # Extract the features to keep
+  features_to_keep = list(norm_feature_importances[norm_feature_importances['cumulative_importance'] < threshold]['feature'])
+
+  # Create new datasets with smaller features
+  df_new = df_train[features_to_keep]
+  df_new['TARGET'] = Y
+  return df_new
+def ml_scoring(df_new):
+  Xnew_train =df_new.copy()
+  Y = Xnew_train['TARGET']
+  Xnew_train = df_new.drop(columns=['TARGET','age'])
+  X_train, X_test, Y_train, Y_test = train_test_split(Xnew_train, Y, test_size=.2,
+                                                    random_state=0)
+
+  X_train_ids = X_train.index.values
+  X_test_ids = X_test.index.values
+
+  feat_names = list(Xnew_train.columns)
+  scaler = MinMaxScaler(feature_range= (0,1))
+  scaler.fit(Xnew_train)
+
+  X_train = scaler.transform(X_train)
+  X_test = scaler.transform(X_test)
+
+  clf2 = XGBClassifier(objective='multi:softprob', sampling_method ='gradient_based',booster='gbtree', seed=42, max_depth=1, learning_rate= 0.49221976744492657, gamma= 0.8807972671374964, reg_lambda=0.17934179652902277, num_class=2)
+  clf2.fit(X_train, Y_train, verbose=True, early_stopping_rounds=10, eval_metric='mlogloss', eval_set=[[X_test, Y_test]])
+  ax = plot_roc_curve(clf2, X_test, Y_test)
+  return ax
+
+#machine_learning scoring
+def plot_feature_importances(df, threshold = 0.9):
+    """
+    Plots 15 most important features and the cumulative importance of features.
+    Prints the number of features needed to reach threshold cumulative importance.
+    
+    Parameters
+    --------
+    df : dataframe
+        Dataframe of feature importances. Columns must be feature and importance
+    threshold : float, default = 0.9
+        Threshold for prining information about cumulative importances
+        
+    Return
+    --------
+    df : dataframe
+        Dataframe ordered by feature importances with a normalized column (sums to 1)
+        and a cumulative importance column
+    
+    """
+    
+    plt.rcParams['font.size'] = 18
+    
+    # Sort features according to importance
+    df = df.sort_values('importance', ascending = False).reset_index()
+    
+    # Normalize the feature importances to add up to one
+    df['importance_normalized'] = df['importance'] / df['importance'].sum()
+    df['cumulative_importance'] = np.cumsum(df['importance_normalized'])
+
+    # Make a horizontal bar chart of feature importances
+    plt.figure(figsize = (10, 6))
+    ax = plt.subplot()
+    
+    # Need to reverse the index to plot most important on top
+    ax.barh(list(reversed(list(df.index[:15]))), 
+            df['importance_normalized'].head(15), 
+            align = 'center', edgecolor = 'k')
+    
+    # Set the yticks and labels
+    ax.set_yticks(list(reversed(list(df.index[:15]))))
+    ax.set_yticklabels(df['feature'].head(15))
+    
+    # Plot labeling
+    plt.xlabel('Normalized Importance'); plt.title('Feature Importances')
+    plt.show()
+    
+    # Cumulative importance plot
+    plt.figure(figsize = (8, 6))
+    plt.plot(list(range(len(df))), df['cumulative_importance'], 'r-')
+    plt.xlabel('Number of Features'); plt.ylabel('Cumulative Importance'); 
+    plt.title('Cumulative Feature Importance');
+    plt.show();
+    
+    importance_index = np.min(np.where(df['cumulative_importance'] > threshold))
+    print('%d features required for %0.2f of cumulative importance' % (importance_index + 1, threshold))
+    
+    return df
+def preprocess_ml(credit_vib):
+  credit_vib.drop(columns=['job','personal_status'], inplace = True)
+  credit_vib = pd.get_dummies(credit_vib, drop_first= False)
+
+  label = credit_vib['TARGET']
+  df_train = credit_vib.copy()
+  df_train = df_train.drop(columns=['TARGET'])
+
+  Y = label.copy()
+  X = df_train.copy()
+  feat_names = list(X.columns)
+
+  X_ids = X.index.values
+  Y_ids = Y.index.values
+
+  feature_importances = np.zeros(X.shape[1])
+  model = lgb.LGBMClassifier(objective='binary', boosting_type = 'goss', n_estimators = 1000, class_weight = 'balanced')
+
+  for i in range(2):
+    train_features, valid_features, train_y, valid_y = train_test_split(X, Y, test_size = 0.25, random_state = i)
+    model.fit(train_features, train_y, early_stopping_rounds=100, eval_set = [(valid_features, valid_y)], 
+              eval_metric = 'auc', verbose = 200)
+    feature_importances += model.feature_importances_
+  feature_importances = feature_importances / 2
+
+  feature_importances = pd.DataFrame({'feature': feat_names, 'importance': feature_importances}).sort_values('importance', ascending = False)
+  zero_features = list(feature_importances[feature_importances['importance'] == 0.0]['feature'])
+  norm_feature_importances = plot_feature_importances(feature_importances)
+  df_train = df_train.drop(columns= zero_features)
+  threshold = 0.95
+
+  # Extract the features to keep
+  features_to_keep = list(norm_feature_importances[norm_feature_importances['cumulative_importance'] < threshold]['feature'])
+
+  # Create new datasets with smaller features
+  df_new = df_train[features_to_keep]
+  df_new['TARGET'] = Y
+  return df_new
+
+
 
 def display(st,result):
     st.plotly_chart(result)
@@ -236,6 +459,10 @@ def display(st,result):
 if __name__ == "__main__":
     df= pd.read_csv('./credit.csv')
     preprocess = preprocess(df=df)
+    #domain scoring
     weighted_df = weighted_scoring(df=preprocess)
     result = result(Scoring_board=weighted_df, df=preprocess)
+    #machine learning scoring
+    df_new = preprocess_ml(credit_vib=prepeocess)
+    ml_result = ml_scoring(df_new=df_new)
     display(st, result=result)
