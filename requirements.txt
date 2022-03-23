@@ -11,3 +11,4 @@ python-graphql-client==0.4.2
 pip==22.0.4
 plotly
 lightgbm
+xgboost
