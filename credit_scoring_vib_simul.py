@@ -451,9 +451,14 @@ def preprocess_ml(credit_vib):
 
 
 
-def display(st,result):
-    st.plotly_chart(result)
-    st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
+def display(st,result,result_ml):
+    col1, col2 = st.beta_columns(2)
+    with col1:
+        st.plotly_chart(result)
+        st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
+    with col2:
+        st.plotly_chart(result_ml)
+        st.markdown('<p style="font: 16px bold Georgia, serif; text-transform: uppercase; color: blue;text-align: center;">credit</p>',unsafe_allow_html=True)
     
 
 
@@ -466,4 +471,4 @@ if __name__ == "__main__":
     #machine learning scoring
     df_new = preprocess_ml(credit_vib=preprocess)
     ml_result = ml_scoring(df_new=df_new)
-    display(st, result=result)
+    display(st, result=result, result_ml=ml_result)
