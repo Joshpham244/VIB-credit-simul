@@ -234,7 +234,8 @@ def result(Scoring_board, df) :
   ax.set_xlabel('False Positive Rate')
   plotly_fig = tls.mpl_to_plotly(fig)
 
-  return plotly_fig  def plot_feature_importances(df, threshold = 0.9):
+  return plotly_fig  
+def plot_feature_importances(df, threshold = 0.9):
     """
     Plots 15 most important features and the cumulative importance of features.
     Prints the number of features needed to reach threshold cumulative importance.
