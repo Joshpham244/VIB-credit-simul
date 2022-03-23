@@ -464,6 +464,6 @@ if __name__ == "__main__":
     weighted_df = weighted_scoring(df=preprocess)
     result = result(Scoring_board=weighted_df, df=preprocess)
     #machine learning scoring
-    df_new = preprocess_ml(credit_vib=prepeocess)
+    df_new = preprocess_ml(credit_vib=preprocess)
     ml_result = ml_scoring(df_new=df_new)
     display(st, result=result)
